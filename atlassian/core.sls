@@ -1,17 +1,16 @@
-# common stuff all Atlassian apps need
+# common core all Atlassian apps need
 
-{% from "atlassian/defaults.jinja" import config with context %}
-{%- set atlassian_home = '/opt/atlassian' %}
-{%- set atlassian_group = 'atlassian' %}
+{%- set home = '/opt/atlassian' %}
+{%- set group = 'atlassian' %}
 
 
 atlassian:
   file.directory:
-    - name: {{ atlassian_home }}
+    - name: {{ home }}
     - user: root
-    - group: {{ atlassian_group }}
+    - group: {{ group }}
     - mode: 750
     - require:
         - group: atlassian
   group.present:
-    - name: {{ atlassian_group }}
+    - name: {{ group }}
