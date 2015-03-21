@@ -21,6 +21,12 @@
 {%- set active_app = home + '/current' %}
 {%- set app_datadir = home + '/data' %}
 
+{#- resource limits #}
+{%- set jvm_max_mem = '768' %}
+{#- length of time upstart waits before killing non-responsive process #}
+{#- http://upstart.ubuntu.com/cookbook/#kill-timeout -#}
+{%- set init_kill_timeout = '90' %}
+
 include:
   - atlassian.core
   - atlassian.java.jre
@@ -103,21 +109,27 @@ stash-user-set-umask:
 # install init script and ensure the service can run
 stash-service:
   file.managed:
-    - name: /etc/init.d/stash
-    - source: salt://atlassian/files/stash/init.jinja
+    - name: /etc/init/stash.conf
+    - source: salt://atlassian/files/stash/upstart.conf
     - template: jinja
     - user: root
     - group: root
-    - mode: 755
+    - mode: 644
     - context:
-        runas: {{ user }}
+        kill_timeout: {{ init_kill_timeout }}
+        runas_user: {{ user }}
+        runas_group: {{ group }}
         app_path: {{ active_app }}
         data_dir: {{ app_datadir }}
+        bin_path: bin/start-stash.sh
+        java_opts: '-Xms768m -Xmx1g'
+        log_path: {{ log_path }}
     - require:
         - user: stash-user
         - file: stash-active-release
         - file: stash-data
         - file: stash-user-set-umask
+        - file: stash-log-file
   service.running:
     - name: stash
     - enable: True
