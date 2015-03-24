@@ -78,7 +78,7 @@ stash-release:
     - if_missing: {{ install_to }}/bin/
     - archive_format: tar
     # use --strip-components, removes the leading path in the tarball
-    - tar_options: 'z --strip-components=1 -'
+    - tar_options: 'z --strip-components=1 '
     - archive_user: {{ user }}
     - require:
         - file: stash-release
