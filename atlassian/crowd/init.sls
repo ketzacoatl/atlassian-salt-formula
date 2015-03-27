@@ -130,11 +130,14 @@ crowd-service:
     - context:
         runas_user: {{ user }}
         runas_group: {{ group }}
-        app_path: {{ active_app }}
         data_dir: {{ app_datadir }}
-        bin_path: apache-tomcat/bin/catalina.sh
+        app_path: {{ active_app }}
+        pid_path: {{ active_app }}/apache-tomcat/work/crowd.pid
+        bin_path: 'apache-tomcat/bin/catalina.sh'
+        bin_opts: 'start'
         # pulled these from crowd's startup.sh
         java_opts: '-Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8'
+        description: 'Atlassian Crowd'
     - require:
         - user: crowd-user
         - file: crowd-active-release
