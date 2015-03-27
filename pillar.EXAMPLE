@@ -1,0 +1,11 @@
+crowd:
+  # port crowd runs on, for all interfaces
+  local_port: 8095
+  # when run thru proxy/load balancer
+  proxy:
+    # port, as seen by the client
+    port: 443 
+    # fqdn on the edge, as seen by the client
+    name: crowd.foo.example.com
+  # boolean to enable SSL
+  ssl: True
