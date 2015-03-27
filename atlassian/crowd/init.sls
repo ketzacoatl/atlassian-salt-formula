@@ -6,7 +6,6 @@
 {%- set group = 'atlassian' %}
 {%- set atlassian_home = '/opt/atlassian' %}
 {%- set atlassian_datadir = '/var/atlassian/application-data' %}
-{%- set atlassian_log_path = '/var/log/atlassian' %}
 
 {#- app/service user and home #}
 {%- set app = 'crowd' %}
@@ -27,7 +26,6 @@
 {%- set install_to = home + '/release/' + version %}
 {%- set active_app = home + '/current' %}
 {%- set app_datadir = home + '/data' %}
-{%- set log_path = atlassian_log_path + '/crowd.log' %}
 
 {#- resource limits #}
 {%- set jvm_max_mem = '768' %}
@@ -106,19 +104,6 @@ crowd-active-release:
         - archive: crowd-release
 
 
-# ensure we have a file to log to, with correct perms
-crowd-log-file:
-  file.managed:
-    - name: {{ log_path }}
-    - user: {{ user }}
-    - group: {{ group }}
-    - mode: 640
-    - require:
-        - file: atlassian-log-path
-        - user: crowd-user
-        - group: atlassian
-
-
 # install init script and ensure the service can run
 crowd-service:
   file.managed:
@@ -140,7 +125,6 @@ crowd-service:
         - user: crowd-user
         - file: crowd-active-release
         - file: crowd-data
-        - file: crowd-log-file
   service.running:
     - name: crowd
     - enable: True
