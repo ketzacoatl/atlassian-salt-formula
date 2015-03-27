@@ -104,6 +104,20 @@ crowd-active-release:
         - archive: crowd-release
 
 
+# manage tomcat's server.xml for SSL/proxying
+crowd-tomcat-server:
+  file.managed:
+    - name: {{ install_to }}/apache-tomcat/conf/server.xml
+    - source: salt://atlassian/files/crowd/server.xml
+    - user: {{ user }}
+    - group: {{ group }}
+    - mode: 640
+    # note: atm, context is looked up in the template directly 
+    - template: jinja
+    - require:
+        - archive: crowd-release
+
+
 # install init script and ensure the service can run
 crowd-service:
   file.managed:
@@ -125,6 +139,7 @@ crowd-service:
         - user: crowd-user
         - file: crowd-active-release
         - file: crowd-data
+        - file: crowd-tomcat-server
   service.running:
     - name: crowd
     - enable: True
@@ -135,3 +150,4 @@ crowd-service:
         - file: crowd-release
         - archive: crowd-release
         - file: crowd-active-release
+        - file: crowd-tomcat-server
