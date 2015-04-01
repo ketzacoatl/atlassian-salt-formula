@@ -100,18 +100,18 @@ jira-active-release:
         - archive: jira-release
 
 
-## manage tomcat's server.xml for SSL/proxying
-#jira-tomcat-server:
-#  file.managed:
-#    - name: {{ install_to }}/apache-tomcat/conf/server.xml
-#    - source: salt://atlassian/files/jira/server.xml
-#    - user: {{ user }}
-#    - group: {{ group }}
-#    - mode: 640
-#    # note: atm, context is looked up in the template directly 
-#    - template: jinja
-#    - require:
-#        - archive: jira-release
+# manage tomcat's server.xml for SSL/proxying
+jira-tomcat-server:
+  file.managed:
+    - name: {{ install_to }}/conf/server.xml
+    - source: salt://atlassian/files/jira/server.xml
+    - user: {{ user }}
+    - group: {{ group }}
+    - mode: 640
+    # note: atm, context is looked up in the template directly
+    - template: jinja
+    - require:
+        - archive: jira-release
 
 
 # install init script and ensure the service can run
@@ -136,6 +136,7 @@ jira-service:
     - require:
         - user: jira-user
         - file: jira-active-release
+        - file: jira-tomcat-server
         - file: jira-data
   service.running:
     - name: jira
@@ -147,3 +148,4 @@ jira-service:
         - file: jira-release
         - archive: jira-release
         - file: jira-active-release
+        - file: jira-tomcat-server
