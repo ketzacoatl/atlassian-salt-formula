@@ -130,8 +130,6 @@ jira-service:
         data_dir: {{ app_datadir }}
         bin_path: 'bin/start-jira.sh'
         bin_opts: '-fg'
-        # pulled these from jira's startup.sh
-        #java_opts: '-Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8'
         java_opts: ''
     - require:
         - user: jira-user
