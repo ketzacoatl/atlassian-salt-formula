@@ -1,7 +1,7 @@
 {#- it is generally better to set these through context #}
-{%- set proxy = salt['pillar.get']('crowd:proxy', False) %}
-{%- set ssl = salt['pillar.get']('crowd:ssl', False) %}
-{%- set local_port = salt['pillar.get']('crowd:local_port', '8095') %}
+{%- set proxy = salt['pillar.get']('atlassian:crowd:proxy', False) %}
+{%- set ssl = salt['pillar.get']('atlassian:crowd:ssl', False) %}
+{%- set local_port = salt['pillar.get']('crowd:local_port', '8095') -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <Server port="8020" shutdown="SHUTDOWN">
 
