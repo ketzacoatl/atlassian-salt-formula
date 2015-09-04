@@ -13,8 +13,8 @@
 {%- set home = atlassian_home + '/' + user %}
 
 {#- release info, version specific #}
-{%- set version = '5.8.1' %}
-{%- set tarball_checksum = 'sha512=aec7069a7506a7fc690a204bb4523f203c3b2256de5b59951dc9f72d23f2cd7e3b653f5406ca56e17473af4e3f490bc6d10b5c937e14f2891f3835e6d70256d6' %}
+{%- set version = '5.9.4' %}
+{%- set tarball_checksum = 'sha512=0c968e25dc7b73bbbbd7f32bee3cf3ddfa07587c88245e34b7b427e12b84315826b706dc896d5b1a361ffadc9d978b8e2d3d9b8fae9e0223f870f3a1933970b8' %}
 
 {#- release info, non-version specific #}
 {%- set base_url = 'https://www.atlassian.com/software/' + app + '/downloads/binary' %}
