@@ -4,7 +4,7 @@
 
 cleanup-build_dir:
   cron.present:
-    - name: 'find {{ build_dir }} -ctime +{{ days }} -daystart -exec ls -alh "{}" \;'
+    - name: 'find {{ build_dir }} -type f -ctime +{{ days }} -daystart -exec rm "{}" \;'
     - identifier: cleanup-build-dir
     - user: root
     - minute: 0
