@@ -30,6 +30,7 @@
 include:
   - atlassian.core
   - atlassian.java.jre
+  - atlassian.stash.backup_logs
 
 
 # create a system user and /opt/atlassian/stash 
