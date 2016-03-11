@@ -10,31 +10,31 @@
 {#- app/service user and home #}
 {%- set app = 'jira' %}
 {%- set user = app %}
-{%- set home = atlassian_home + '/' + user %}
+{%- set home = atlassian_home ~ '/' ~ user %}
 
 {#- release info, version specific #}
-{%- set version = '6.4' %}
-{%- set tarball_checksum = 'sha512=d7b2a4925d1ad2c83e20484d13bd72ab4bad112d7d568f7255c7a7db786ab40afb64e6414a4527d8d9dedb8d6b145a24f11549bf41869db1fe96908ea60043a2' %}
+{%- set version = '7.1.0' %}
+{%- set tarball_checksum = 'sha512=41d3674b9e918759236d81fcd228bbd8fe952720646d8882ddcab183e3ba291324bad5bd2452eb8cdcff6367a8f2d0ce5887bdd7030933285a210c6afcdcd187' %}
 
 {#- release info, non-version specific #}
-{%- set base_url = 'https://www.atlassian.com/software/' + app + '/downloads/binary' %}
-{%- set tarball = 'atlassian-' + app + '-' + version + '.tar.gz' %}
-{%- set tarball_url = base_url + '/' + tarball %}
+{%- set base_url = 'https://www.atlassian.com/software/' ~ app ~ '/downloads/binary' %}
+{%- set tarball = 'atlassian-' ~ app ~ '-software-' ~ version ~ '-' ~ app ~ '-' ~ version ~ '.tar.gz' %}
+{%- set tarball_url = base_url ~ '/' ~ tarball %}
 
 {#- local paths #}
-{%- set install_to = home + '/release/' + version %}
-{%- set active_app = home + '/current' %}
-{%- set app_datadir = home + '/data' %}
+{%- set install_to = home ~ '/release/' ~ version %}
+{%- set active_app = home ~ '/current' %}
+{%- set app_datadir = home ~ '/data' %}
 
 {#- resource limits #}
 {%- set jvm_max_mem = '1024' %}
 
 include:
   - atlassian.core
-  - atlassian.java.jre
+  - atlassian.java.oracle
 
 
-# create a system user and /opt/atlassian/jira 
+# create a system user and /opt/atlassian/jira
 jira-user:
   user.present:
     - name: {{ user }}
@@ -91,6 +91,7 @@ jira-release:
     - require:
         - file: jira-release
 
+
 # symlink /opt/atlassian/jira/current/ -> /opt/atlassian/jira/$version/
 jira-active-release:
   file.symlink:
@@ -141,7 +142,7 @@ jira-service:
     - enable: True
     - watch:
         - user: jira-user
-        - pkg: openjre
+        - pkg: oracle-java
         - file: jira-service
         - file: jira-release
         - archive: jira-release
