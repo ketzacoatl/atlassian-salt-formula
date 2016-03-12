@@ -1,9 +1,9 @@
 {#- formula for backing up and restoring important files to s3 bucket -#}
-{%- set cron_minute = '0' %}
-{%- set cron_hour = '*' %}
-{%- set cron_daymonth = '*' %}
-{%- set cron_month = '*' %}
-{%- set cron_dayweek = '*' %}
+{%- set cron_minute = salt['pillar.get']('atlassian:jira:backup:minute', '0') %}
+{%- set cron_hour = salt['pillar.get']('atlassian:jira:backup:hour', '*') %}
+{%- set cron_daymonth = salt['pillar.get']('atlassian:jira:backup:daymonth', '*') %}
+{%- set cron_month = salt['pillar.get']('atlassian:jira:backup:month', '*') %}
+{%- set cron_dayweek = salt['pillar.get']('atlassian:jira:backup:dayweek', '*') %}
 
 s3-backup:
   file.managed:
