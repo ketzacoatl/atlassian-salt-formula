@@ -1,13 +1,13 @@
-{%- set version = '4.4.1' %}
-{%- set app = 'bitbucket' %}
+{%- set version = '3.7.1' %}
+{%- set app = 'stash' %}
 
-{%- set db_user = salt['pillar.get']('atlassian:bitbucket:db:user', 'bitbucket') %}
-{%- set db_pass = salt['pillar.get']('atlassian:bitbucket:db:pass', 'bitbucket') %}
-{%- set db_name = salt['pillar.get']('atlassian:bitbucket:db:name', 'bitbucket') %}
-{%- set db_host = salt['pillar.get']('atlassian:bitbucket:db:host', 'localhost') %}
+{%- set db_user = salt['pillar.get']('atlassian:stash:db:user', 'stash') %}
+{%- set db_pass = salt['pillar.get']('atlassian:stash:db:pass', 'stash') %}
+{%- set db_name = salt['pillar.get']('atlassian:stash:db:name', 'stash') %}
+{%- set db_host = salt['pillar.get']('atlassian:stash:db:host', 'localhost') %}
 
-{%- set home_dir = '/opt/atlassian/bitbucket/current' %}
-{%- set data_dir = '/opt/atlassian/bitbucket/data' %}
+{%- set home_dir = '/opt/atlassian/stash/current' %}
+{%- set data_dir = '/opt/atlassian/stash/data' %}
 
 {%- set aws_creds = '/usr/local/etc/bucket-info.csv' %}
 

@@ -1,8 +1,8 @@
-{%- set version = '4.4.1' %}
-{%- set app = 'bitbucket' %}
+{%- set version = '3.7.1' %}
+{%- set app = 'stash' %}
 
-{%- set home_dir = '/opt/atlassian/bitbucket/current' %}
-{%- set data_dir = '/opt/atlassian/bitbucket/data' %}
+{%- set home_dir = '/opt/atlassian/stash/current' %}
+{%- set data_dir = '/opt/atlassian/stash/data' %}
 
 {%- set aws_creds = '/usr/local/etc/bucket-info.csv' %}
 
