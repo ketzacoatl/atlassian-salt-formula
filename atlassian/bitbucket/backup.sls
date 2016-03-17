@@ -1,4 +1,18 @@
 {#- formula for backing up and restoring important files to s3 bucket -#}
+
+{%- set app = salt['pillar.get']('atlassian:bitbucket:app', 'bitbucket') %}
+{%- set version = salt['pillar.get']('atlassian:bitbucket:version', '4.4.1' %}
+
+{%- set db_user = salt['pillar.get']('atlassian:bitbucket:db:user', 'bitbucket') %}
+{%- set db_pass = salt['pillar.get']('atlassian:bitbucket:db:pass', 'bitbucket') %}
+{%- set db_name = salt['pillar.get']('atlassian:bitbucket:db:name', 'bitbucket') %}
+{%- set db_host = salt['pillar.get']('atlassian:bitbucket:db:host', 'localhost') %}
+
+{%- set home_dir = '/opt/atlassian/' + app + '/current' %}
+{%- set data_dir = '/opt/atlassian/' + app + '/data' %}
+
+{%- set aws_creds = '/usr/local/etc/bucket-info.csv' %}
+
 {%- set cron_minute = salt['pillar.get']('atlassian:bitbucket:backup:minute', '0') %}
 {%- set cron_hour = salt['pillar.get']('atlassian:bitbucket:backup:hour', '*') %}
 {%- set cron_daymonth = salt['pillar.get']('atlassian:bitbucket:backup:daymonth', '*') %}
@@ -13,6 +27,17 @@ s3-backup:
     - group: root
     - mode: 750
     - template: jinja
+    - context:
+        app: {{ app }}
+        version: {{ version }}
+        db_user: {{ db_user }}
+        db_pass: {{ db_pass }}
+        db_name: {{ db_name }}
+        db_host: {{ db_host }}
+        home_dir: {{ home_dir }}
+        data_dir: {{ data_dir }}
+        aws_creds: {{ aws_creds }}
+
   cron.present:
     - name: /usr/local/bin/s3-backup.sh
     - identifier: S3_BACKUP
@@ -32,6 +57,15 @@ s3-restore:
     - group: root
     - mode: 750
     - template: jinja
+    - context:
+        app: {{ app }}
+        db_user: {{ db_user }}
+        db_pass: {{ db_pass }}
+        db_name: {{ db_name }}
+        db_host: {{ db_host }}
+        home_dir: {{ home_dir }}
+        data_dir: {{ data_dir }}
+        aws_creds: {{ aws_creds }}
 
 s3-migrate:
   file.managed:
@@ -41,3 +75,8 @@ s3-migrate:
     - group: root
     - mode: 750
     - template: jinja
+    - context:
+        app: {{ app }}
+        home_dir: {{ home_dir }}
+        data_dir: {{ data_dir }}
+        aws_creds: {{ aws_creds }}

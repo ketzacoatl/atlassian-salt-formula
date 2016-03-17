@@ -1,11 +1,3 @@
-{%- set version = '4.4.1' %}
-{%- set app = 'bitbucket' %}
-
-{%- set home_dir = '/opt/atlassian/bitbucket/current' %}
-{%- set data_dir = '/opt/atlassian/bitbucket/data' %}
-
-{%- set aws_creds = '/usr/local/etc/bucket-info.csv' %}
-
 #!/bin/bash
 FILE=$1 #specify the backup to restore from
 

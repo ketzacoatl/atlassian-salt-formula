@@ -2,20 +2,34 @@
 # Adapted from Atlassian Stash, Bitbucket's predecessor
 # Create a user for , use the common Atlassian group
 # Hardcode a number of paths and versions, but keep it sane
+{% from "bitbucket/maps/bitbucket/checksum_map.jinja" import bitbucket_checksum_map with context %}
+{% from "bitbucket/maps/bitbucket/base_url_map.jinja" import bitbucket_base_url_map with context %}
+{% from "bitbucket/maps/stash/checksum_map.jinja" import stash_checksum_map with context %}
+{% from "bitbucket/maps/stash/base_url_map.jinja" import stash_base_url_map with context %}
 
 {%- set group = 'atlassian' %}
 {%- set atlassian_home = '/opt/atlassian' %}
 {%- set atlassian_datadir = '/var/atlassian/application-data' %}
 
-{%- set app = 'bitbucket' %}
+{%- set app = salt['pillar.get']('atlassian:bitbucket:app', 'bitbucket') %}
 {%- set user = app %}
 {%- set home = atlassian_home + '/' + user %}
 
-#DL URL: https://www.atlassian.com/software/stash/downloads/binary/atlassian-bitbucket-4.4.1.tar.gz
-{%- set version = '4.4.1' %}
-{%- set tarball_checksum = 'sha512=ec0b4d4f8a98f44421bb5864ad380543e6d8ad688045b0216b9669b6a7affbb1c736c03ac25b6cab8b5f80e84a22a3e959824f9f1c00ee6e354b24709ed0ef8b' %}
+{%- if app == "bitbucket" %}
+  {%- set default_version = '4.4.1' %}
+  {%- set version = salt['pillar.get']('atlassian:bitbucket:version', default_version %}
+  {%- set default_checksum = bitbucket_checksum_map[version] %}
+  {%- set default_base_url = bitbucket_base_url_map[version] %}
+{%- elif app == "stash" %}
+  {%- set default_version = '3.7.1' %}
+  {%- set version = salt['pillar.get']('atlassian:bitbucket:version', default_version %}
+  {%- set default_checksum = stash_checksum_map[version] %}
+  {%- set default_base_url = stash_base_url_map[version] %}
+{%- endif %}
 
-{%- set base_url = 'https://www.atlassian.com/software/' + 'stash' + '/downloads/binary' %}
+{%- set tarball_checksum = salt['pillar.get']('atlassian:bitbucket:checksum', default_checksum) %}
+{%- set base_url = salt['pillar.get']('atlassian:bitbucket:base_url', default_base_url) %}
+
 {%- set tarball = 'atlassian-' + app + '-' + version + '.tar.gz' %}
 {%- set tarball_url = base_url + '/' + tarball %}
 
@@ -83,7 +97,7 @@ bitbucket-release:
   archive.extracted:
     - name: {{ install_to }}
     - source: {{ tarball_url }}
-    - source_hash: {{ tarball_checksum }}
+    - source_hash: sha512={{ tarball_checksum }}
     - if_missing: {{ install_to }}/bin/
     - archive_format: tar
     # use --strip-components, removes the leading path in the tarball
@@ -112,7 +126,7 @@ bitbucket-user-set-umask:
 # install init script and ensure the service can run
 bitbucket-service:
   file.managed:
-    - name: /etc/init/bitbucket.conf
+    - name: /etc/init/{{ app }}.conf
     - source: salt://atlassian/files/bitbucket/upstart.conf
     - template: jinja
     - user: root
@@ -124,7 +138,7 @@ bitbucket-service:
         runas_group: {{ group }}
         app_path: {{ active_app }}
         data_dir: {{ app_datadir }}
-        bin_path: bin/start-bitbucket.sh
+        bin_path: bin/start-{{ app }}.sh
         java_opts: '-Xms768m -Xmx1g'
         log_path: {{ log_path }}
     - require:
@@ -134,7 +148,7 @@ bitbucket-service:
         - file: bitbucket-user-set-umask
         - file: bitbucket-log-file
   service.running:
-    - name: bitbucket
+    - name: {{ app }}
     - enable: True
     - require:
         - pkg: openjre

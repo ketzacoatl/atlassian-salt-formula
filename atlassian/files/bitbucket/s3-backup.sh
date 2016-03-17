@@ -1,16 +1,3 @@
-{%- set version = '4.4.1' %}
-{%- set app = 'bitbucket' %}
-
-{%- set db_user = salt['pillar.get']('atlassian:bitbucket:db:user', 'bitbucket') %}
-{%- set db_pass = salt['pillar.get']('atlassian:bitbucket:db:pass', 'bitbucket') %}
-{%- set db_name = salt['pillar.get']('atlassian:bitbucket:db:name', 'bitbucket') %}
-{%- set db_host = salt['pillar.get']('atlassian:bitbucket:db:host', 'localhost') %}
-
-{%- set home_dir = '/opt/atlassian/bitbucket/current' %}
-{%- set data_dir = '/opt/atlassian/bitbucket/data' %}
-
-{%- set aws_creds = '/usr/local/etc/bucket-info.csv' %}
-
 #!/bin/bash
 ### DB Config
 NOW=$(date +"%Y%m%d_%H%M%S" -u)
