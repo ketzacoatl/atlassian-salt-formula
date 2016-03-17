@@ -3,9 +3,7 @@
 # Create a user for , use the common Atlassian group
 # Hardcode a number of paths and versions, but keep it sane
 {% from "bitbucket/maps/bitbucket/checksum_map.jinja" import bitbucket_checksum_map with context %}
-{% from "bitbucket/maps/bitbucket/base_url_map.jinja" import bitbucket_base_url_map with context %}
 {% from "bitbucket/maps/stash/checksum_map.jinja" import stash_checksum_map with context %}
-{% from "bitbucket/maps/stash/base_url_map.jinja" import stash_base_url_map with context %}
 
 {%- set group = 'atlassian' %}
 {%- set atlassian_home = '/opt/atlassian' %}
@@ -13,29 +11,30 @@
 
 {%- set app = salt['pillar.get']('atlassian:bitbucket:app', 'bitbucket') %}
 {%- set user = app %}
-{%- set home = atlassian_home + '/' + user %}
+{%- set home = atlassian_home ~ '/' ~ user %}
 
 {%- if app == "bitbucket" %}
   {%- set default_version = '4.4.1' %}
   {%- set version = salt['pillar.get']('atlassian:bitbucket:version', default_version %}
   {%- set default_checksum = bitbucket_checksum_map[version] %}
   {%- set default_base_url = bitbucket_base_url_map[version] %}
+  {%- set default_base_url = 'https://www.atlassian.com/software/stash/downloads/binary' %}
 {%- elif app == "stash" %}
   {%- set default_version = '3.7.1' %}
   {%- set version = salt['pillar.get']('atlassian:bitbucket:version', default_version %}
   {%- set default_checksum = stash_checksum_map[version] %}
-  {%- set default_base_url = stash_base_url_map[version] %}
+  {%- set default_base_url = 'https://downloads.atlassian.com/software/stash/downloads' %}
 {%- endif %}
 
 {%- set tarball_checksum = salt['pillar.get']('atlassian:bitbucket:checksum', default_checksum) %}
 {%- set base_url = salt['pillar.get']('atlassian:bitbucket:base_url', default_base_url) %}
 
-{%- set tarball = 'atlassian-' + app + '-' + version + '.tar.gz' %}
-{%- set tarball_url = base_url + '/' + tarball %}
+{%- set tarball = 'atlassian-' ~ app ~ '-' ~ version ~ '.tar.gz' %}
+{%- set tarball_url = base_url ~ '/' ~ tarball %}
 
-{%- set install_to = home + '/release/' + version %}
-{%- set active_app = home + '/current' %}
-{%- set app_datadir = home + '/data' %}
+{%- set install_to = home ~ '/release/' ~ version %}
+{%- set active_app = home ~ '/current' %}
+{%- set app_datadir = home ~ '/data' %}
 
 {#- resource limits #}
 {%- set jvm_max_mem = '768' %}
