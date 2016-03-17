@@ -15,13 +15,12 @@
 
 {%- if app == "bitbucket" %}
   {%- set default_version = '4.4.1' %}
-  {%- set version = salt['pillar.get']('atlassian:bitbucket:version', default_version %}
+  {%- set version = salt['pillar.get']('atlassian:bitbucket:version', default_version) %}
   {%- set default_checksum = bitbucket_checksum_map[version] %}
-  {%- set default_base_url = bitbucket_base_url_map[version] %}
   {%- set default_base_url = 'https://www.atlassian.com/software/stash/downloads/binary' %}
 {%- elif app == "stash" %}
   {%- set default_version = '3.7.1' %}
-  {%- set version = salt['pillar.get']('atlassian:bitbucket:version', default_version %}
+  {%- set version = salt['pillar.get']('atlassian:bitbucket:version', default_version) %}
   {%- set default_checksum = stash_checksum_map[version] %}
   {%- set default_base_url = 'https://downloads.atlassian.com/software/stash/downloads' %}
 {%- endif %}

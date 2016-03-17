@@ -2,14 +2,14 @@
 {%- set atlassian_home = '/opt/atlassian' %}
 {%- set app = salt['pillar.get']('atlassian:bitbucket:app', 'bitbucket') %}
 {%- set user = app %}
-{%- set home = atlassian_home + '/' + user %}
+{%- set home = atlassian_home ~ '/' ~ user %}
 {%- set version = salt['pillar.get']('atlassian:bitbucket:version', '4.4.1' %}
-{%- set install_to = home + '/release/' + version %}
-{%- set active_app = home + '/current' %}
-{%- set app_datadir = home + '/data' %}
-{%- set backup_root = home + '/backup' %}
-{%- set bitbucket_backup_to = backup_root + '/{{ app }}_logs' %}
-{%- set bitbucket_backup_from = app_datadir + '/log'  %}
+{%- set install_to = home ~ '/release/' ~ version %}
+{%- set active_app = home ~ '/current' %}
+{%- set app_datadir = home ~ '/data' %}
+{%- set backup_root = home ~ '/backup' %}
+{%- set bitbucket_backup_to = backup_root ~ '/{{ app }}_logs' %}
+{%- set bitbucket_backup_from = app_datadir ~ '/log'  %}
 
 bitbucket-log-backup:
   file.directory:
