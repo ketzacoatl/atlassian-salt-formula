@@ -2,8 +2,8 @@
 # Adapted from Atlassian Stash, Bitbucket's predecessor
 # Create a user for , use the common Atlassian group
 # Hardcode a number of paths and versions, but keep it sane
-{% from "bitbucket/maps/bitbucket/checksum_map.jinja" import bitbucket_checksum_map with context %}
-{% from "bitbucket/maps/stash/checksum_map.jinja" import stash_checksum_map with context %}
+{% from "atlassian/bitbucket/maps/bitbucket/checksum_map.jinja" import bitbucket_checksum_map with context %}
+{% from "atlassian/bitbucket/maps/stash/checksum_map.jinja" import stash_checksum_map with context %}
 
 {%- set group = 'atlassian' %}
 {%- set atlassian_home = '/opt/atlassian' %}
@@ -43,7 +43,11 @@
 
 include:
   - atlassian.core
+ {%- if app == "bitbucket" %}
+  - atlassian.java.oracle
+ {%- elif app == "stash" %}
   - atlassian.java.jre
+ {%- endif %}
   - atlassian.bitbucket.backup_logs
 
 
@@ -131,6 +135,7 @@ bitbucket-service:
     - group: root
     - mode: 644
     - context:
+        app: {{ app }}
         kill_timeout: {{ init_kill_timeout }}
         runas_user: {{ user }}
         runas_group: {{ group }}
@@ -138,18 +143,21 @@ bitbucket-service:
         data_dir: {{ app_datadir }}
         bin_path: bin/start-{{ app }}.sh
         java_opts: '-Xms768m -Xmx1g'
-        log_path: {{ log_path }}
+        log_path: /opt/atlassian/{{ app }}/logs/catalina.out
     - require:
         - user: bitbucket-user
         - file: bitbucket-active-release
         - file: bitbucket-data
         - file: bitbucket-user-set-umask
-        - file: bitbucket-log-file
   service.running:
     - name: {{ app }}
     - enable: True
     - require:
+        {%- if app == "bitbucket" %}
+        - pkg: oracle-java
+        {%- elif app == "stash" %}
         - pkg: openjre
+        {%- endif %}
         - user: bitbucket-user
     - watch:
         - file: bitbucket-service
