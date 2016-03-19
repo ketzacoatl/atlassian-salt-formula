@@ -11,16 +11,25 @@
 {%- set user = app %}
 {%- set home = atlassian_home ~ '/' ~ user %}
 
+{#- Differences between bitbucket and stash %}
 {%- if app == "bitbucket" %}
   {%- set default_version = '4.4.1' %}
   {%- set version = salt['pillar.get']('atlassian:bitbucket:version', default_version) %}
   {%- set default_checksum = bitbucket_checksum_map[version] %}
   {%- set default_base_url = 'https://www.atlassian.com/software/stash/downloads/binary' %}
+
+  {%- set java_include = 'atlassian.java.oracle' %}
+  {%- set java_require = 'oracle-java' %}
 {%- elif app == "stash" %}
   {%- set default_version = '3.7.1' %}
   {%- set version = salt['pillar.get']('atlassian:bitbucket:version', default_version) %}
   {%- set default_checksum = stash_checksum_map[version] %}
   {%- set default_base_url = 'https://downloads.atlassian.com/software/stash/downloads' %}
+
+  {%- set java_include = 'atlassian.java.jre' %}
+  {%- set java_require = 'openjre' %}
+{%- else %}
+{{ salt.test.exception('APP_NAME_ERR: For atlassian:bitbucket:app, please specify "bitbucket" or "stash"') }}
 {%- endif %}
 
 {%- set tarball_checksum = salt['pillar.get']('atlassian:bitbucket:checksum', default_checksum) %}
@@ -41,11 +50,7 @@
 
 include:
   - atlassian.core
- {%- if app == "bitbucket" %}
-  - atlassian.java.oracle
- {%- elif app == "stash" %}
-  - atlassian.java.jre
- {%- endif %}
+  - {{ java_include }}
 
 # create a system user and /opt/atlassian/bitbucket
 bitbucket-user:
@@ -164,11 +169,7 @@ bitbucket-service:
     - name: {{ app }}
     - enable: True
     - require:
-        {%- if app == "bitbucket" %}
-        - pkg: oracle-java
-        {%- elif app == "stash" %}
-        - pkg: openjre
-        {%- endif %}
+        - pkg: {{ java_require }}
         - user: bitbucket-user
     - watch:
         - file: bitbucket-service
