@@ -2,8 +2,7 @@
 # Adapted from Atlassian Stash, Bitbucket's predecessor
 # Create a user for , use the common Atlassian group
 # Hardcode a number of paths and versions, but keep it sane
-{% from "atlassian/bitbucket/maps/bitbucket/checksum_map.jinja" import bitbucket_checksum_map with context %}
-{% from "atlassian/bitbucket/maps/stash/checksum_map.jinja" import stash_checksum_map with context %}
+{% from "atlassian/bitbucket/checksum_map.jinja" import bitbucket_checksum_map, stash_checksum_map with context %}
 
 {%- set group = 'atlassian' %}
 {%- set atlassian_home = '/opt/atlassian' %}
