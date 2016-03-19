@@ -7,7 +7,6 @@
 
 {%- set group = 'atlassian' %}
 {%- set atlassian_home = '/opt/atlassian' %}
-{%- set atlassian_datadir = '/var/atlassian/application-data' %}
 
 {%- set app = salt['pillar.get']('atlassian:bitbucket:app', 'bitbucket') %}
 {%- set user = app %}
@@ -48,8 +47,6 @@ include:
  {%- elif app == "stash" %}
   - atlassian.java.jre
  {%- endif %}
-  - atlassian.bitbucket.backup_logs
-
 
 # create a system user and /opt/atlassian/bitbucket
 bitbucket-user:
