@@ -125,6 +125,20 @@ bitbucket-user-set-umask:
     - name: {{ install_to }}/bin/setenv.sh
 
 
+# manage tomcat's server.xml for SSL/proxying
+bitbucket-tomcat-server:
+  file.managed:
+    - name: {{ install_to }}/conf/server.xml
+    - source: salt://atlassian/files/bitbucket/server.xml
+    - user: {{ user }}
+    - group: {{ group }}
+    - mode: 640
+    # note: atm, context is looked up in the template directly
+    - template: jinja
+    - require:
+        - archive: bitbucket-release
+
+
 # install init script and ensure the service can run
 bitbucket-service:
   file.managed:
@@ -149,6 +163,7 @@ bitbucket-service:
         - file: bitbucket-active-release
         - file: bitbucket-data
         - file: bitbucket-user-set-umask
+        - file: bitbucket-tomcat-server
   service.running:
     - name: {{ app }}
     - enable: True
@@ -163,4 +178,5 @@ bitbucket-service:
         - file: bitbucket-service
         - file: bitbucket-release
         - file: bitbucket-active-release
+        - file: bitbucket-tomcat-server
         - archive: bitbucket-release
