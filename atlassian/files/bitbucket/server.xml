@@ -1,8 +1,8 @@
-{#- it is generally better to set these through context #}
+{# it is generally better to set these through context #}
 {%- set proxy = salt['pillar.get']('atlassian:bitbucket:proxy', False) %}
 {%- set ssl = salt['pillar.get']('atlassian:bitbucket:ssl', False) %}
-{%- set local_port = salt['pillar.get']('atlassian:bitbucket:local_port', '7990') -%
-{%- set app = salt['pillar.get']('atlassian:bitbucket:app', 'bitbucket') %}
+{%- set local_port = salt['pillar.get']('atlassian:bitbucket:local_port', '7990') %}
+{%- set app = salt['pillar.get']('atlassian:bitbucket:app', 'bitbucket') -%}
 <?xml version='1.0' encoding='utf-8'?>
 <!--
   Licensed to the Apache Software Foundation (ASF) under one or more

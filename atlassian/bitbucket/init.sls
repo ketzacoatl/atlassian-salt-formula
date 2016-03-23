@@ -11,7 +11,6 @@
 {%- set user = app %}
 {%- set home = atlassian_home ~ '/' ~ user %}
 
-{#- Differences between bitbucket and stash %}
 {%- if app == "bitbucket" %}
   {%- set default_version = '4.4.1' %}
   {%- set version = salt['pillar.get']('atlassian:bitbucket:version', default_version) %}

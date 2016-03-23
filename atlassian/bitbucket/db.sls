@@ -32,6 +32,6 @@ bitbucket-db:
     - require:
         - postgres_user: bitbucket-db
   cmd.run:
-    - name: "echo \"please run the following: psql --host {{ host }} --username {{ db_user }} 'GRANT ALL PRIVILEGES ON DATABASE {{ name }} TO {{ user }};'\""
+    - name: "echo \"please run the following: psql --host {{ host }} --username {{ db_user }} 'GRANT ALL PRIVILEGES ON DATABASE {{ dbname }} TO {{ user }};'\""
     - require:
         - postgres_database: bitbucket-db
