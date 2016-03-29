@@ -1,4 +1,5 @@
 #!/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 # S3 Backup/Restore Tool for Atlassian Suite
 ### General Config
 APP={{ app }}
