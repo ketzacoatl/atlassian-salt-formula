@@ -1,0 +1,21 @@
+# vim: sts=2 ts=2 sw=2 et ai
+{% set checksum_map = {
+  '5.7.1': '7e90a748f7ea2e4a161e8ddaa5789bc3ec0ee0c47a8a3cf4b4d7f8160a819e6c040577de69c6750c3477e06de9d63d869e27c0067f6181280863aa03aed8a5a7',
+  '5.9.7': '519f66749a115750b4e17ae96244baec6b8de4439b802e15cb65a07ccc1636ad164fbe965fc3941fc8bcaaef958b72eee3d164139dc73b7caa7580b037902178',
+  }
+%}
+{% set url_map = {
+  '5.7.1': 'https://downloads.atlassian.com/software/confluence/downloads',
+  '5.9.7': 'https://www.atlassian.com/software/confluence/downloads/binary',
+  }
+%}
+{% set java_include_map = {
+  '5.7.1': 'atlassian.java.jre',
+  '5.9.7': 'atlassian.java.oracle',
+  }
+%}
+{% set java_require_map = {
+  '5.7.1': 'openjre',
+  '5.9.7': 'oracle-java',
+  }
+%}

@@ -1,11 +1,11 @@
 # Install Atlassian Confluence
 # Create a user for Confluence, use the common Atlassian group
 # Hardcode a number of paths and versions, but keep it sane
+{% from "atlassian/confluence/maps.jinja" import checksum_map, url_map, java_include_map, java_require_map with context %}
 
 {#- common to all apps in the atlassian suite -#}
 {%- set group = 'atlassian' %}
 {%- set atlassian_home = '/opt/atlassian' %}
-{%- set atlassian_datadir = '/var/atlassian/application-data' %}
 
 {#- app/service user and home #}
 {%- set app = 'confluence' %}
@@ -13,11 +13,16 @@
 {%- set home = atlassian_home + '/' + user %}
 
 {#- release info, version specific #}
-{%- set version = '5.7.1' %}
-{%- set tarball_checksum = 'sha512=7e90a748f7ea2e4a161e8ddaa5789bc3ec0ee0c47a8a3cf4b4d7f8160a819e6c040577de69c6750c3477e06de9d63d869e27c0067f6181280863aa03aed8a5a7' %}
+{%- set default_version = '5.9.7' %}
+{%- set version = salt['pillar.get']('atlassian:confluence:version', default_version) %}
+{%- set default_checksum = checksum_map[version] %}
+{%- set default_base_url = url_map[version] %}
+{%- set java_include = java_include_map[version] %}
+{%- set java_require = java_require_map[version] %}
 
 {#- release info, non-version specific #}
-{%- set base_url = 'https://downloads.atlassian.com/software/' + app + '/downloads' %}
+{%- set tarball_checksum = salt['pillar.get']('atlassian:conflucence:checksum', default_checksum) %}
+{%- set base_url = salt['pillar.get']('atlassian:confluence:base_url', default_base_url) %}
 {%- set tarball = 'atlassian-' + app + '-' + version + '.tar.gz' %}
 {%- set tarball_url = base_url + '/' + tarball %}
 
@@ -28,7 +33,7 @@
 
 include:
   - atlassian.core
-  - atlassian.java.jre
+  - {{ java_include }}
 
 
 # create a system user and /opt/atlassian/confluence
@@ -79,7 +84,7 @@ confluence-release:
   archive.extracted:
     - name: {{ install_to }}
     - source: {{ tarball_url }}
-    - source_hash: {{ tarball_checksum }}
+    - source_hash: sha512={{ tarball_checksum }}
     - if_missing: {{ install_to }}/bin/catalina.sh
     - archive_format: tar
     # use --strip-components, removes the leading path in the tarball
@@ -101,7 +106,7 @@ confluence-active-release:
 confluence-tomcat-server:
   file.managed:
     - name: {{ install_to }}/conf/server.xml
-    - source: salt://atlassian/files/confluence/server.xml
+    - source: salt://atlassian/files/confluence/{{ version }}/server.xml
     - user: {{ user }}
     - group: {{ group }}
     - mode: 640
@@ -115,7 +120,7 @@ confluence-tomcat-server:
 confluence-init-config:
   file.managed:
     - name: {{ install_to }}/confluence/WEB-INF/classes/confluence-init.properties
-    - source: salt://atlassian/files/confluence/confluence-init.properties
+    - source: salt://atlassian/files/confluence/{{ version }}/confluence-init.properties
     - user: {{ user }}
     - group: {{ group }}
     - mode: 640
@@ -159,7 +164,7 @@ confluence-service:
     - enable: True
     - watch:
         - user: confluence-user
-        - pkg: openjre
+        - pkg: {{ java_require }}
         - file: confluence-service
         - file: confluence-release
         - archive: confluence-release
