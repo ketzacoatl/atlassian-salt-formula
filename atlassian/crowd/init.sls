@@ -1,11 +1,11 @@
 # Install Atlassian Crowd
 # Create a user for Crowd, use the common Atlassian group
 # Hardcode a number of paths and versions, but keep it sane
+{% from "atlassian/crowd/maps.jinja" import checksum_map with context %}
 
 {#- common to all apps in the atlassian suite -#}
 {%- set group = 'atlassian' %}
 {%- set atlassian_home = '/opt/atlassian' %}
-{%- set atlassian_datadir = '/var/atlassian/application-data' %}
 
 {#- app/service user and home #}
 {%- set app = 'crowd' %}
@@ -13,11 +13,12 @@
 {%- set home = atlassian_home + '/' + user %}
 
 {#- release info, version specific #}
-{%- set version = '2.8.0' %}
-{%- set tarball_checksum = 'sha512=7cb1d57653cc4bf2d720a623b876cd17e2b6ff45348626ec227e522de11cc5ab4138b58a07a7739a15d83669a028ebc0db371b6f2688c6dafc51ab9ec9bf7e35' %}
-
+{%- set default_version = '2.8.4' %}
+{%- set version = salt['pillar.get']('atlassian:crowd:version', default_version) %}
+{%- set default_checksum = checksum_map[version] %}
 
 {#- release info, non-version specific #}
+{%- set tarball_checksum = salt['pillar.get']('atlassian:conflucence:checksum', default_checksum) %}
 {%- set base_url = 'https://www.atlassian.com/software/' + app + '/downloads/binary' %}
 {%- set tarball = 'atlassian-' + app + '-' + version + '.tar.gz' %}
 {%- set tarball_url = base_url + '/' + tarball %}
@@ -86,7 +87,7 @@ crowd-release:
   archive.extracted:
     - name: {{ install_to }}
     - source: {{ tarball_url }}
-    - source_hash: {{ tarball_checksum }}
+    - source_hash: sha512={{ tarball_checksum }}
     - if_missing: {{ install_to }}/apache-tomcat/bin/catalina.sh
     - archive_format: tar
     # use --strip-components, removes the leading path in the tarball

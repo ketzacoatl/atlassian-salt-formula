@@ -9,10 +9,15 @@
 {{ salt.test.exception('DEPLOY_ENV_ERR: For atlassian:backup:app:deployment_environment, please specify "production" or "staging"') }}
 {%- endif %}
 
+{%- set db_skip = salt['pillar.get']('atlassian:backup:db:skip', False) %}
 {%- set db_user = salt['pillar.get']('atlassian:backup:db:user', app) %}
 {%- set db_pass = salt['pillar.get']('atlassian:backup:db:pass', app) %}
 {%- set db_name = salt['pillar.get']('atlassian:backup:db:name', app) %}
 {%- set db_host = salt['pillar.get']('atlassian:backup:db:host', 'localhost') %}
+
+{%- if db_skip not in [True, False] %}
+{{ salt.test.exception('DB_SKIP_ERR: For atlassian:backup:db:skip, please specify True or False') }}
+{%- endif %}
 
 {%- set default_home = '/opt/atlassian/' ~ app ~ '/current' %}
 {%- set default_data = '/opt/atlassian/' ~ app ~ '/data' %}
@@ -47,6 +52,7 @@ s3-backup:
       app: {{ app }}
       version: {{ version }}
       deploy_env: {{ deploy_env }}
+      db_skip: {{ db_skip }}
       db_user: {{ db_user }}
       db_pass: {{ db_pass }}
       db_name: {{ db_name }}

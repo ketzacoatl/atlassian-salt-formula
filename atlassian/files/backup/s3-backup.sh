@@ -22,6 +22,11 @@ BUCKET={{ s3_bucket }}
 PROFILE={{ s3_profile }}
 S3_PATH="s3://$BUCKET/$ENV"
 
+function backup_db {
+    echo "Dumping database, $DB_NAME, to $BACKUPDIR/$DB_BACKUP"
+    pg_dump -U $DB_USER -d $DB_NAME -h $DB_HOST | xz > $BACKUPDIR/$DB_BACKUP
+    echo "Dumping database, $DB_NAME, to $BACKUPDIR/$DB_BACKUP: Done!"
+}
 
 function backup {
     ### File Config
@@ -46,9 +51,7 @@ function backup {
     echo "Copying $APP_DATA to $BACKUPDIR/data"
     cp -r $APP_DATA/* $BACKUPDIR/data/.
     echo "Copying $APP_DATA to $BACKUPDIR/data: Done!"
-    echo "Dumping database, $DB_NAME, to $BACKUPDIR/$DB_BACKUP"
-    pg_dump -U $DB_USER -d $DB_NAME -h $DB_HOST | xz > $BACKUPDIR/$DB_BACKUP
-    echo "Dumping database, $DB_NAME, to $BACKUPDIR/$DB_BACKUP: Done!"
+    {{ 'true' if db_skip else 'backup_db' }}
     echo "Archiving and compressing $BACKUPDIR to $ARCHIVE"
     tar c $BACKUPDIR | xz > $ARCHIVE
     echo "Archiving and compressing $BACKUPDIR to $ARCHIVE: Done!"
@@ -57,6 +60,12 @@ function backup {
     echo "Moving $ARCHIVE to $S3_PATH/$ARCHIVE: Done!"
     rm -rf $BACKUPDIR
     echo "Backup complete!"
+}
+
+function restore_db {
+    echo "Restoring database: $DB_NAME"
+    xzcat $DIR/$DIR.sql.xz | psql -U $DB_USER -d $DB_NAME -h $DB_HOST
+    echo "Restoring database: $DB_NAME: Done!"
 }
 
 function restore {
@@ -79,19 +88,7 @@ function restore {
     echo "Stopping $APP"
     service $APP stop
     echo "Stopping $APP: Done!"
-    #If database exists, destroy it (you have a backup after all)
-    if bash -c 'sudo -u postgres psql -c "\l" | grep $APP' > /dev/null;
-      then
-          echo "Dropping database: $DB_NAME"
-          sudo -u postgres dropdb $DB_NAME
-          echo "Dropping database: $DB_NAME: Done!"
-    fi
-    echo "Creating database: $DB_NAME"
-    salt-call --local state.sls atlassian.$APP.db
-    echo "Creating database: $DB_NAME: Done!"
-    echo "Restoring database: $DB_NAME"
-    xzcat $DIR/$DIR.sql.xz | psql -U $DB_USER -d $DB_NAME -h $DB_HOST
-    echo "Restoring database: $DB_NAME: Done!"
+    {{ 'true' if db_skip else 'restore_db' }}
     echo "Restoring home directory"
     cp -r $DIR/home/* $APP_HOME
     echo "Restoring home directory: Done!"
