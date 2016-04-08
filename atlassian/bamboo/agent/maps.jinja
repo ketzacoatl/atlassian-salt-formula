@@ -1,0 +1,19 @@
+# vim: sts=2 ts=2 sw=2 et ai
+{% set checksum_map = {
+  '5.8.1':  'ea445da8cbebe494577cac9394fce2e4e9127fd27162e98c44a442cd55d5d4f377ec4c31afdee351bf1787cb26d0ff4f041ca0890c1fb2740f98aec71e50ce51',
+  '5.9.4':  'd6af40024637cec115262539ff3d3c644ac71b48d3bc2cc2ef0c6e144c5cfcb77fb7f3a5290015cf5c3197711cfa12460655f409e982776afb6cf191a664f4a5',
+  '5.10.3': '8472d018fa0c603ea3475420468e757df0a2ef230d2c36aaed1cf511f92ae472bb367b455a2fed39782fa6c70f003357f5d08b261193f4ff3313cd20180e1ab8',
+  }
+%}
+{% set java_include_map = {
+  '5.8.1':  'atlassian.java.jre',
+  '5.9.4':  'atlassian.java.jre',
+  '5.10.3': 'atlassian.java.oracle',
+  }
+%}
+{% set java_require_map = {
+  '5.8.1':  'openjre',
+  '5.9.4':  'openjre',
+  '5.10.3': 'oracle-java',
+  }
+%}
