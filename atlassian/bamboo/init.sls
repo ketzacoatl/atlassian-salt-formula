@@ -1,29 +1,33 @@
 # Install Atlassian Crowd
 # Create a user for Crowd, use the common Atlassian group
 # Hardcode a number of paths and versions, but keep it sane
+{% from "atlassian/bamboo/maps.jinja" import checksum_map, java_include_map, java_require_map with context %}
 
 {#- common to all apps in the atlassian suite -#}
 {%- set group = 'atlassian' %}
 {%- set atlassian_home = '/opt/atlassian' %}
-{%- set atlassian_datadir = '/var/atlassian/application-data' %}
 
 {#- app/service user and home #}
 {%- set app = 'bamboo' %}
 {%- set user = app %}
-{%- set home = atlassian_home + '/' + user %}
+{%- set home = atlassian_home ~ '/' ~ user %}
 
 {#- release info, version specific #}
-{%- set version = '5.9.4' %}
-{%- set tarball_checksum = 'sha512=0c968e25dc7b73bbbbd7f32bee3cf3ddfa07587c88245e34b7b427e12b84315826b706dc896d5b1a361ffadc9d978b8e2d3d9b8fae9e0223f870f3a1933970b8' %}
+{%- set default_version = '5.10.3' %}
+{%- set version = salt['pillar.get']('atlassian:bamboo:version', default_version) %}
+{%- set default_checksum = checksum_map[version] %}
+{%- set java_include = java_include_map[version] %}
+{%- set java_require = java_require_map[version] %}
+{%- set tarball_checksum = salt['pillar.get']('atlassian:bamboo:checksum', default_checksum) %}
 
 {#- release info, non-version specific #}
-{%- set base_url = 'https://www.atlassian.com/software/' + app + '/downloads/binary' %}
-{%- set tarball = 'atlassian-' + app + '-' + version + '.tar.gz' %}
-{%- set tarball_url = base_url + '/' + tarball %}
+{%- set base_url = 'https://www.atlassian.com/software/' ~ app ~ '/downloads/binary' %}
+{%- set tarball = 'atlassian-' ~ app ~ '-' ~ version ~ '.tar.gz' %}
+{%- set tarball_url = base_url ~ '/' ~ tarball %}
 
 {#- local paths #}
-{%- set install_to = home + '/release/' + version %}
-{%- set active_app = home + '/current' %}
+{%- set install_to = home ~ '/release/' ~ version %}
+{%- set active_app = home ~ '/current' %}
 {%- set app_datadir = home + '/data' %}
 
 {#- resource limits #}
@@ -31,7 +35,7 @@
 
 include:
   - atlassian.core
-  - atlassian.java.jre
+  - {{ java_include }}
 
 
 # create a system user and /opt/atlassian/bamboo 
@@ -82,7 +86,7 @@ bamboo-release:
   archive.extracted:
     - name: {{ install_to }}
     - source: {{ tarball_url }}
-    - source_hash: {{ tarball_checksum }}
+    - source_hash: sha512={{ tarball_checksum }}
     - if_missing: {{ install_to }}/bin/catalina.sh
     - archive_format: tar
     # use --strip-components, removes the leading path in the tarball
@@ -104,7 +108,7 @@ bamboo-active-release:
 bamboo-tomcat-server:
   file.managed:
     - name: {{ install_to }}/conf/server.xml
-    - source: salt://atlassian/files/bamboo/server.xml
+    - source: salt://atlassian/files/bamboo/{{ version }}/server.xml
     - user: {{ user }}
     - group: {{ group }}
     - mode: 640
@@ -142,7 +146,7 @@ bamboo-service:
     - enable: True
     - watch:
         - user: bamboo-user
-        - pkg: openjre
+        - pkg: {{ java_require }}
         - file: bamboo-service
         - file: bamboo-release
         - archive: bamboo-release
