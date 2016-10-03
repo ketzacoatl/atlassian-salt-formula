@@ -9,8 +9,8 @@ core-dump-store:
     - makedirs: True
     - user: root
     - group: {{ group }}
-    - dir_mode: 750
-    - file_mode: 640
+    - dir_mode: 770
+    - file_mode: 660
     - recurse:
         - user
         - group
