@@ -1,11 +1,4 @@
 # Install Bamboo Remote Agent
-{#- Default parameters -#}
-{%- set default_version = '5.10.3' %}
-{%- set default_bamboo_master = 'bamboo.service.consul' %}
-
-{#- Configurable parameters -#}
-{%- set version = salt['pillar.get']('atlassian:bamboo_agent:version', default_version) %}
-{%- set bamboo_master = salt['pillar.get']('atlassian:bamboo_agent:master_addr', default_bamboo_master) %}
 
 {#- common to all apps in the atlassian suite -#}
 {%- set group = 'atlassian' %}
@@ -16,14 +9,22 @@
 {%- set user = app %}
 {%- set home = atlassian_home ~ '/' ~ user %}
 
-{#- release info, version specific #}
-{% from "atlassian/bamboo/agent/maps.jinja" import checksum_map, java_include_map, java_require_map with context %}
-{%- set jarfile_checksum = 'sha512=' ~ checksum_map[version] %}
-{%- set java_include = java_include_map[version] %}
-{%- set java_require = java_require_map[version] %}
+{#- version and checksum details #}
+{%- set default_version = '5.10.3' %}
+{%- set version = salt['pillar.get']('atlassian:bamboo_agent:version', default_version) %}
+{%- set checksum = salt['pillar.get']('atlassian:bamboo_agent:checksum', False) %}
 
-{#- release info, non-version specific #}
-{%- set base_url = bamboo_master ~ '/agentServer/agentInstaller' %}
+{#- lookup java details #}
+{% from "atlassian/bamboo/agent/maps.jinja" import java_include_map, java_require_map with context %}
+{%- set java_include = java_include_map[default_version] %}
+{%- set java_require = java_require_map[default_version] %}
+
+{#- URL for the agent to find bamboo master #}
+{%- set default_bamboo_url = 'http://bamboo.service.consul:8085' %}
+{%- set bamboo_url = salt['pillar.get']('atlassian:bamboo_agent:bamboo_url', default_bamboo_url) %}
+{%- set default_base_url = bamboo_url ~ '/agentServer/agentInstaller' %}
+
+{%- set base_url = salt['pillar.get']('atlassian:bamboo_agent:base_url', default_base_url) %}
 {%- set jarfile = 'atlassian-bamboo-agent-installer-' ~ version ~ '.jar' %}
 {%- set jarfile_url = base_url ~ '/' ~ jarfile %}
 
@@ -79,7 +80,7 @@ bamboo-agent-release:
   file.managed:
     - name: {{ install_to }}/{{ jarfile }}
     - source: {{ jarfile_url }}
-    - source_hash: {{ jarfile_checksum }}
+    - source_hash: sha512={{ checksum }}
     - user: {{ user }}
     - group: {{ group }}
     - mode: 750
@@ -109,9 +110,9 @@ bamboo-agent-service:
         chdir {{ home }}
         
         script
-        java -Dbamboo.Home={{ app_datadir }} -jar {{ install_to }}/{{ jarfile }} {{ bamboo_master }}/agentServer/
+        java -Dbamboo.Home={{ app_datadir }} -jar {{ install_to }}/{{ jarfile }} {{ bamboo_url }}/agentServer/
         end script
-        
+
     - require:
         - user: bamboo-agent-user
         - file: bamboo-agent-release
