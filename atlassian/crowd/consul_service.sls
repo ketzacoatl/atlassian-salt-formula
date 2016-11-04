@@ -18,7 +18,7 @@ crowd-consul-service:
             "port": 8095,
             "checks": [
               {
-                "script": "sudo service crowd status",
+                "script": "pgrep crowd",
                 "interval": "30s"
               }
             ]

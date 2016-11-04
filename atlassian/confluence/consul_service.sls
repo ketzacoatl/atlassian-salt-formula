@@ -18,7 +18,7 @@ confluence-consul-service:
             "port": 8090,
             "checks": [
               {
-                "script": "sudo service confluence status",
+                "script": "pgrep confluence",
                 "interval": "30s"
               }
             ]

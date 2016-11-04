@@ -18,7 +18,7 @@ bamboo-consul-service:
             "port": 8085,
             "checks": [
               {
-                "script": "sudo service bamboo status",
+                "script": "pgrep bamboo",
                 "interval": "30s"
               }
             ]

@@ -19,7 +19,7 @@ stash-consul-service:
             "port": 7990,
             "checks": [
               {
-                "script": "sudo service {{ app }} status",
+                "script": "pgrep {{ app }}",
                 "interval": "30s"
               }
             ]
