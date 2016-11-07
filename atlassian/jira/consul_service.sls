@@ -18,7 +18,7 @@ jira-consul-service:
             "port": 8080,
             "checks": [
               {
-                "script": "pgrep jira",
+                "script": "pgrep -u jira java",
                 "interval": "30s"
               }
             ]

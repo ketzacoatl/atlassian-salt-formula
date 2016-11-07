@@ -18,7 +18,7 @@ crowd-consul-service:
             "port": 8095,
             "checks": [
               {
-                "script": "pgrep crowd",
+                "script": "pgrep -u crowd java",
                 "interval": "30s"
               }
             ]

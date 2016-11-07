@@ -18,7 +18,7 @@ confluence-consul-service:
             "port": 8090,
             "checks": [
               {
-                "script": "pgrep confluence",
+                "script": "pgrep -u confluence java",
                 "interval": "30s"
               }
             ]

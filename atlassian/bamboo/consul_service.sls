@@ -18,7 +18,7 @@ bamboo-consul-service:
             "port": 8085,
             "checks": [
               {
-                "script": "pgrep bamboo",
+                "script": "pgrep -u bamboo java",
                 "interval": "30s"
               }
             ]

@@ -19,7 +19,7 @@ stash-consul-service:
             "port": 7990,
             "checks": [
               {
-                "script": "pgrep {{ app }}",
+                "script": "pgrep -u {{ app }} java",
                 "interval": "30s"
               }
             ]
